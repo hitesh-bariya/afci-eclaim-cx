@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Row, Col, Form } from 'react-bootstrap';
 import AttachmentViewer from './AttachmentViewer';
 import { ExpenseItem, CurrencyItem } from '../hooks/claimFormSlice';
@@ -9,6 +9,7 @@ interface Props {
     localCurrency: string;
     advanceAmount: number;
     claimData: any;
+    userRole?: string;
 }
 
 const SummaryFinancialDetails: React.FC<Props> = ({
@@ -16,49 +17,70 @@ const SummaryFinancialDetails: React.FC<Props> = ({
     currencyData,
     localCurrency,
     advanceAmount,
-    claimData
+    claimData,
+    userRole
 }) => {
 
     const [amountCurrency, setAmountCurrency] = useState("INR");
+    useEffect(() => {
+        if (userRole === 'FBC') {
+            setAmountCurrency('INR');
+        } else {
+            setAmountCurrency(localCurrency);
+        }
+    }, [userRole, localCurrency]);
 
+const {
+    totalExpenseInLocal,
+    perDiemTotal,
+    dueToCompany,
+    dueToYou,
+    expenseTotals
+} = useMemo(() => {
+    const totals: { [currency: string]: number } = {};
+    let localExpense = 0;
+    let perDiem = 0;
 
-    const {
-        totalExpenseInLocal,
-        perDiemTotal,
-        dueToCompany,
-        dueToYou,
-        expenseTotals
-    } = useMemo(() => {
-        const totals: { [currency: string]: number } = {};
-        let localExpense = 0;
-        let perDiem = 0;
+    expenseData.forEach(item => {
+        const currency = item.currency?.trim();
+        const amount = Number(item.expenseAmount) || 0;
+        const isPerDiem = item.expenseCode === 'Per diem';
 
-        expenseData.forEach(item => {
-            const currency = item.currency?.trim();
-            const amount = Number(item.expenseAmount) || 0;
-            const isPerDiem = item.expenseCode === 'Per diem';
-            if (!currency || amount <= 0) return;
-            totals[currency] = (totals[currency] || 0) + amount;
+        if (!currency || amount <= 0) return;
+        totals[currency] = (totals[currency] || 0) + amount;
+        const rate = currencyData.find(c => c.destinationCurrency === currency)?.exchangeRate || 1;
+        let converted = amount;
+        if (userRole === 'FBC') {
+            converted = amount * rate;
+        } else {
             const isSameCurrency = currency === localCurrency;
-            const rate = currencyData.find(c => c.destinationCurrency === currency)?.exchangeRate || 0;
-            const converted = isSameCurrency ? amount : amount * rate;
-
+            converted = isSameCurrency ? amount : amount / rate;
+        }
+        if (userRole === 'FBC') {
             if (isPerDiem) perDiem += converted;
             else localExpense += converted;
-        });
+        } else {
+            if (!isPerDiem) localExpense += converted;
+        }
+    });
 
-        const totalClaimed = localExpense + perDiem;
-        const dueToCompany = totalClaimed < advanceAmount ? advanceAmount - totalClaimed : 0;
-        const dueToYou = totalClaimed >= advanceAmount ? totalClaimed - advanceAmount : 0;
+    const totalClaimed = userRole === 'FBC' ? localExpense + perDiem : localExpense;
+    const dueToCompany = (userRole === 'FBC' && totalClaimed < advanceAmount)
+        ? advanceAmount - totalClaimed
+        : 0;
 
-        return {
-            expenseTotals: totals,
-            totalExpenseInLocal: localExpense,
-            perDiemTotal: perDiem,
-            dueToCompany,
-            dueToYou
-        };
-    }, [expenseData, currencyData, localCurrency, advanceAmount]);
+    const dueToYou = totalClaimed >= advanceAmount
+        ? totalClaimed - advanceAmount
+        : 0;
+
+    return {
+        expenseTotals: totals,
+        totalExpenseInLocal: localExpense,
+        perDiemTotal: userRole === 'FBC' ? perDiem : 0,
+        dueToCompany,
+        dueToYou
+    };
+}, [expenseData, currencyData, localCurrency, advanceAmount, userRole]);
 
     return (
         <>
@@ -90,14 +112,16 @@ const SummaryFinancialDetails: React.FC<Props> = ({
                         </div>
                     </Form.Group>
                 </Col>
-                <Col md={6}>
-                    <Form.Group>
-                        <div className="d-flex align-items-center border-bottom summary-form-footer">
-                            <Form.Label className='summary-form-footer-label'>Per Diem Amount</Form.Label>
-                            <div>{`${amountCurrency} ${perDiemTotal.toFixed(2)}`}</div>
-                        </div>
-                    </Form.Group>
-                </Col>
+                {userRole === 'FBC' && (
+                    <Col md={6}>
+                        <Form.Group>
+                            <div className="d-flex align-items-center border-bottom summary-form-footer">
+                                <Form.Label className='summary-form-footer-label'>Per Diem Amount</Form.Label>
+                                <div>{`${amountCurrency} ${perDiemTotal.toFixed(2)}`}</div>
+                            </div>
+                        </Form.Group>
+                    </Col>
+                )}
             </Row>
 
             <Row className="mt-3">
@@ -120,18 +144,23 @@ const SummaryFinancialDetails: React.FC<Props> = ({
                     </table>
                 </Col>
                 <Col md={6}>
-                    <Form.Group>
-                        <div className="d-flex align-items-center border-bottom summary-details-finance summary-form-footer mt-2">
-                            <Form.Label className='summary-form-footer-label'>Advance Amount</Form.Label>
-                            <div>{`${amountCurrency} ${advanceAmount.toFixed(2)}`}</div>
-                        </div>
-                    </Form.Group>
-                    <Form.Group>
-                        <div className="d-flex align-items-center border-bottom summary-details-finance summary-form-footer mt-3">
-                            <Form.Label className='summary-form-footer-label'>Due to Company</Form.Label>
-                            <div>{`${amountCurrency} ${dueToCompany.toFixed(2)}`}</div>
-                        </div>
-                    </Form.Group>
+                    {userRole === 'FBC' && (
+                        <>
+                            <Form.Group>
+                                <div className="d-flex align-items-center border-bottom summary-details-finance summary-form-footer mt-2">
+                                    <Form.Label className='summary-form-footer-label'>Advance Amount</Form.Label>
+                                    <div>{`${amountCurrency} ${advanceAmount.toFixed(2)}`}</div>
+                                </div>
+                            </Form.Group>
+                            <Form.Group>
+                                <div className="d-flex align-items-center border-bottom summary-details-finance summary-form-footer mt-3">
+                                    <Form.Label className='summary-form-footer-label'>Due to Company</Form.Label>
+                                    <div>{`${amountCurrency} ${dueToCompany.toFixed(2)}`}</div>
+                                </div>
+                            </Form.Group>
+                        </>
+
+                    )}
                     <Form.Group>
                         <div className="d-flex align-items-center border-bottom summary-details-finance summary-form-footer mt-3">
                             <Form.Label className='summary-form-footer-label'>Due to You</Form.Label>
