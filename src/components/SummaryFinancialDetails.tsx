@@ -39,9 +39,8 @@ const SummaryFinancialDetails: React.FC<Props> = ({
             const isPerDiem = item.expenseCode === 'Per diem';
             if (!currency || amount <= 0) return;
             totals[currency] = (totals[currency] || 0) + amount;
-            const isSameCurrency = currency === localCurrency;
             const rate = currencyData.find(c => c.destinationCurrency === currency)?.exchangeRate || 0;
-            const converted = isSameCurrency ? amount : amount * rate;
+            const converted = amount * rate;
 
             if (isPerDiem) perDiem += converted;
             else localExpense += converted;
