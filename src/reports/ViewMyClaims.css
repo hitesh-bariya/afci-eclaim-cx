@@ -1,0 +1,29 @@
+.claims-tab-header {
+    background-color: #d3d8e2;
+    padding: 10px 15px;
+    border-radius: 0.5rem;
+    gap: 25px;
+    justify-content: start;
+    flex-wrap: wrap;
+  }
+  
+  .claims-tab-btn {
+    background-color: transparent;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    color: #0a3d62;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  
+  .claims-tab-btn:hover {
+    background-color: #e2e6ea;
+  }
+  
+  .claims-tab-btn.active-tab {
+    background-color: #0a3d62;
+    color: white;
+    font-weight: bold;
+  }
+  

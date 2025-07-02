@@ -1,0 +1,30 @@
+/* CustomTabs.css */
+
+.custom-tabs {
+  background-color: #f3f4f4; /* light background for tab container */
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+}
+
+.custom-tabs .nav-item {
+  margin: 0 10px;
+}
+
+.custom-tabs .nav-link {
+  background-color: transparent;
+  color: #0a3d62;
+  border: none;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.custom-tabs .nav-link.active {
+  background-color: #013c70;
+  color: #f7f7f9;
+  box-shadow: 0 0 0 2px #0a3d62;
+  border-radius: 12px;
+  font-weight: bold;
+}

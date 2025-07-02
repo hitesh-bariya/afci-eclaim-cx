@@ -1,0 +1,15 @@
+assemble:
+  - from: build/static
+    into: static
+afci-eclaim-cx:
+  cssURLs:
+    - css/main.*.css
+  friendlyURLMapping: afci-eclaim-cx
+  htmlElementName: afci-eclaim-cx
+  instanceable: false
+  name: AFCI Eclaim Application
+  portletCategoryName: category.client-extensions
+  type: customElement
+  urls:
+    - js/main.*.js
+  useESM: true
