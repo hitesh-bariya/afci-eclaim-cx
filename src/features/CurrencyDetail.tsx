@@ -68,10 +68,6 @@ const CurrencyDetail: React.FC<ExpenseDetailsProps> = ({
       const currencyLabel = currency
         ? `${currency.currencyCode} - ${currency.currencyDescription}`
         : "";
-      dispatch({
-        type: "claimForm/updateClaimField",
-        payload: { field: "currencyEntries", value: [] },
-      });
 
       setLocalCurrency(currencyCode);
       setCurrencyLabel(currencyLabel);

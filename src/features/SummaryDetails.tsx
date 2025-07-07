@@ -152,10 +152,7 @@ const SummaryDetails: React.FC<ExpenseDetailsProps> = ({ goToNext, goToPrevious 
       return;
     try {
       const payload = {
-        eclaimApprovalStatus: {
-          key: "Cancelled",
-          name: "Cancelled"
-        },
+        eclaimApprovalStatus:"Cancelled",
         isCancelled: "Yes",
       };
       const response = await baseFetch(
@@ -187,10 +184,7 @@ const SummaryDetails: React.FC<ExpenseDetailsProps> = ({ goToNext, goToPrevious 
         dueToCompany: dueToCompany,
         dueToYou: dueToYou,
         localCurrency: localCurrency,
-        eclaimApprovalStatus: {
-          key: "Draft",
-          name: "Draft"
-        }
+        eclaimApprovalStatus: "Draft",
       };
       const response = await baseFetch(
         `/o/c/eclaimdetails/${claimForm.claim.eclaimDetailId}`,
@@ -228,10 +222,7 @@ const SummaryDetails: React.FC<ExpenseDetailsProps> = ({ goToNext, goToPrevious 
         dueToCompany: dueToCompany,
         dueToYou: dueToYou,
         localCurrency: localCurrency,
-        eclaimApprovalStatus: {
-          key: "pendingAtFinanceController",
-          name: "Pending at Finance Controller"
-        }
+        eclaimApprovalStatus: "pendingAtFinanceController"
       };
       const response = await baseFetch(
         `/o/c/eclaimdetails/${claimForm.claim.eclaimDetailId}`,
@@ -270,10 +261,7 @@ const SummaryDetails: React.FC<ExpenseDetailsProps> = ({ goToNext, goToPrevious 
         dueToYou: dueToYou,
         localCurrency: localCurrency,
         isResubmitted: "Yes",
-        eclaimApprovalStatus: {
-          key: "draft",
-          name: "Draft"
-        }
+        eclaimApprovalStatus: "draft"
       };
       const response = await baseFetch(
         `/o/c/eclaimdetails/${claimForm.claim.eclaimDetailId}`,

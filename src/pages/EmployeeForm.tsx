@@ -133,10 +133,7 @@ const EmployeeForm: React.FC<ExpenseDetailsProps> = ({
         purpose: formData.claim.purpose,
         daysAwayFromHome: formData.claim.daysAway.toString(),
         remarks: formData.claim.remarks || " ",
-        eclaimApprovalStatus: {
-          key: "DRAFT",
-          name: "DRAFT",
-        },
+        eclaimApprovalStatus: "draft",
         eclaimDetailsAttachmentsRelation:
           allAttachmentIds.map((id) => {
             const meta = formData.claim.attachments.find(

@@ -974,3 +974,13 @@ html, body {
   margin-right: 30%;
   font-weight: normal;
 }
+.tab-title {
+  user-select: none;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  display: inline-block;
+}
+
+.disabled-tab {
+  cursor:not-allowed !important;
+}
